@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #1a202c;
+        font-family: Arial, sans-serif;
+      }
+
+      .calculator {
+        width: 320px;
+        background-color: #2d3748;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+
+      .display {
+        background-color: #4a5568;
+        color: white;
+        font-size: 2rem;
+        padding: 16px;
+        text-align: right;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      button {
+        font-size: 1.25rem;
+        padding: 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+      }
+
+      button:hover {
+        opacity: 0.8;
+      }
+
+      button:active {
+        transform: scale(0.95);
+      }
+
+      .number {
+        background-color: #4a5568;
+        color: white;
+      }
+
+      .operator {
+        background-color: #ed8936;
+        color: white;
+      }
+
+      .equals {
+        background-color: #4299e1;
+        color: white;
+      }
+
+      .clear {
+        background-color: #f56565;
+        color: white;
+        grid-column: span 4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="calculator">
+      <div class="display" id="display">0</div>
+      <div class="buttons">
+        <button class="number" onclick="handleClick('7')">7</button>
+        <button class="number" onclick="handleClick('8')">8</button>
+        <button class="number" onclick="handleClick('9')">9</button>
+        <button class="operator" onclick="handleClick('/')">/</button>
+        <button class="number" onclick="handleClick('4')">4</button>
+        <button class="number" onclick="handleClick('5')">5</button>
+        <button class="number" onclick="handleClick('6')">6</button>
+        <button class="operator" onclick="handleClick('*')">*</button>
+        <button class="number" onclick="handleClick('1')">1</button>
+        <button class="number" onclick="handleClick('2')">2</button>
+        <button class="number" onclick="handleClick('3')">3</button>
+        <button class="operator" onclick="handleClick('-')">-</button>
+        <button class="number" onclick="handleClick('0')">0</button>
+        <button class="number" onclick="handleClick('.')">.</button>
+        <button class="equals" onclick="calculateResult()">=</button>
+        <button class="operator" onclick="handleClick('+')">+</button>
+        <button class="clear" onclick="clearInput()">C</button>
+      </div>
+    </div>
+    <script>
+      let input = "0";
+      const display = document.getElementById("display");
+
+      function handleClick(value) {
+        if (input === "0") {
+          input = value;
+        } else {
+          input += value;
+        }
+        display.textContent = input;
+      }
+
+      function clearInput() {
+        input = "0";
+        display.textContent = input;
+      }
+
+      async function calculateResult() {
+        try {
+          const response = await fetch("/calculate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ expression: input }),
+          });
+          const data = await response.json();
+          input = data.result;
+          display.textContent = input;
+        } catch (error) {
+          input = "Error";
+          display.textContent = input;
+        }
+      }
+    </script>
+  </body>
+</html>
